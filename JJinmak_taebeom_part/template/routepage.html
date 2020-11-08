@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block contents %}
+
+    <div style="text-align:center; margin-block: 5px;">
+        <h2 float=left;>막차 정보</h2>
+        <hr>
+        <h3>출발: {{sol['startTime']}} &nbsp;  &nbsp; 도착: {{sol['lastTm']}}</h3>
+        <br><br>
+    </div>
+    <br>
+    <div class="imgCollage">
+            {% for i in range(length) %}
+                    {% if sol["Trans_type"][i]=='bus' %}
+                        <span>
+                            <img src="https://image.flaticon.com/icons/svg/808/808375.svg" alt="bus" width="150" height="150">
+                            <img src="https://icon-library.net/images/right-arrow-icon/right-arrow-icon-2.jpg" alt="arrow" width="100"><br><br>
+                            <p><b>{{sol['Trans_list'][i]}}번</b></p>
+                            <p>{{sol['stations_from_start'][i]}}  ➝ {{sol['stations_from_end'][i]}}</p>
+                            <!-- <p>도착 정류장: {{sol['stations_from_end'][i]}}</p> -->
+                        </span>
+                    {% else %}
+                        <span>
+                            <img src="https://image.flaticon.com/icons/svg/2357/2357310.svg" alt="subway" width="150" height="150">
+                            <img src="https://icon-library.net/images/right-arrow-icon/right-arrow-icon-2.jpg" alt="arrow" width="100"><br><br>
+                            <p><b>{{sol['Trans_list'][i]}}</b></p>
+                            <p>{{sol['stations_from_start'][i]}} ➝ {{sol['stations_from_end'][i]}}</p>
+                            <!-- <p>도착 역: {{sol['stations_from_end'][i]}}</p> -->
+                        </span>
+                        
+                    {% endif %}
+            {% endfor %}
+            <span>
+                <img src="https://image.flaticon.com/icons/svg/619/619034.svg" alt="HOME" width="150" height="150"><br><br>
+            <p>도착!</p>
+            </span>
+    </div>
+
+        <br><br>
+        <h4 style="text-align:center; margin-block: 5px;">총 소요시간: {{sol['Travel_time']}}분 &nbsp; &nbsp; 환승 횟수: {{length-1}}</h4>
+        <br><br>
+        <p class="text-center"><a href="/">Home</a></p>
+        
+{% endblock %}

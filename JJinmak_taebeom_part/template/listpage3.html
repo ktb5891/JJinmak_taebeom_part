@@ -1,0 +1,214 @@
+{% extends 'layout.html' %}
+
+{% block contents %}
+
+<div id="div_search">
+    <h3 style="text-align: center;">다음 중 선택하세요</h3>
+    {% for candidate_dict in candidate_list3 %}
+    <form action="/list_pro3" style="text-align: center;" method="POST">
+
+        <button id=point name=point class="btn" type="submit"
+            style="width:100%; background-color: transparent; border-color: transparent; text-decoration-color: black;"
+            value={{candidate_dict.gungu+candidate_dict.doro}}>
+            {{candidate_dict.title}}</button>
+
+
+        <div style="font-size: 12px;">{{candidate_dict.address}}</div>
+        <br>
+    </form>
+    {% endfor %}
+
+
+</div>
+
+<div id="div_con">
+    <div>
+
+    </div>
+    <div id="map" style="width:100%;height:89%;"></div>
+
+
+    <script>
+        var latlng_list = [];
+
+        var xy_list1 = [];
+        var len_list = parseInt('{{len_list}}');
+
+        var count = 1;
+
+
+        xy_list1.push({{ xy_list }})
+        
+
+        for (var i = 0; i < len_list; i++) {
+            latlng_list[i] = xy_list1[0][i]
+        }
+
+        address[0] = '{{candidate_list3[0]["address"]}}'
+        address[1] = '{{candidate_list3[1]["address"]}}'
+        address[2] = '{{candidate_list3[2]["address"]}}'
+        address[3] = '{{candidate_list3[3]["address"]}}'
+        address[4] = '{{candidate_list3[4]["address"]}}'
+        address[5] = '{{candidate_list3[5]["address"]}}'
+        address[6] = '{{candidate_list3[6]["address"]}}'
+        address[7] = '{{candidate_list3[7]["address"]}}'
+        address[8] = '{{candidate_list3[8]["address"]}}'
+        address[9] = '{{candidate_list3[9]["address"]}}'
+
+        
+
+        var HOME_PATH = window.HOME_PATH || '.';
+        var map = new naver.maps.Map('map', {
+            center: new naver.maps.LatLng(latlng_list[0][0], latlng_list[0][1]),
+            zoom: 15
+        });
+        var markers = [],
+            infoWindows = [];
+
+        function searchAddressToCoordinate(address) {
+            naver.maps.Service.geocode({
+                query: address
+            }, function (status, response) {
+                if (status === naver.maps.Service.Status.ERROR) {
+                    if (!address) {
+                        return alert('Geocode Error, Please check address');
+                    }
+                    return alert('Geocode Error, address:' + address);
+                }
+
+                if (response.v2.meta.totalCount === 0) {
+                    return alert('No result.');
+                }
+
+                var htmlAddresses = [],
+                    item = response.v2.addresses[0],
+                    point = new naver.maps.Point(item.x, item.y);
+
+                if (item.roadAddress) {
+                    htmlAddresses.push('[위도, 경도] ' + item.x + "/" + item.y);
+                }
+
+                if (item.roadAddress) {
+                    htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
+                }
+
+                if (item.jibunAddress) {
+                    htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
+                }
+
+                if (item.englishAddress) {
+                    htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+                }
+                var str = item.jibunAddress;
+                new_address = str.replace(" ", "")
+                new_address = new_address.replace(" ", "")
+                new_address = new_address.replace(" ", "")
+                new_address = new_address.replace(" ", "")
+                if (str.substring(0, 3) == "경기도") {
+                    infoWindow.setContent([
+                        '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                        '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                        htmlAddresses.join('<br />'),
+                        '<br>',
+                        '<span style="display : inline-block; float : left">',
+
+                        '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                        '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(3) + ' >출발지</button>',
+
+                        '</form>',
+
+                        '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                        '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(3) + ' >도착지</button>',
+                        '</form>',
+                        '</span>',
+                        '</div>'
+                    ].join('\n'));
+                }
+                else {
+                    infoWindow.setContent([
+                        '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                        '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                        htmlAddresses.join('<br />'),
+                        '<br>',
+                        '<span style="display : inline-block; float : left">',
+
+                        '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                        '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(5) + ' >출발지</button>',
+
+                        '</form>',
+
+                        '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                        '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(5) + ' >도착지</button>',
+                        '</form>',
+                        '</span>',
+                        '</div>'
+                    ].join('\n'));
+                }
+                map.setCenter(point);
+
+            });
+        }
+        var infoWindow;
+        for (var i = 0; i < 10; i++) {
+            markers.push(makeMarker(map, new naver.maps.LatLng(latlng_list[i][0], latlng_list[i][1]), i));
+
+            infoWindow = new naver.maps.InfoWindow({
+                anchorSkew: true,
+                backgroundColor: "white",
+                borderColor: "lightskyblue",
+                contents: searchAddressToCoordinate(address[i])
+            });
+
+            infoWindows.push(infoWindow)
+
+        }
+
+
+        function makeMarker(map, position, index) {
+
+            var ICON_GAP = 31;
+            var ICON_SPRITE_IMAGE_URL = HOME_PATH + '/img/example/sp_pins_spot_v3.png';
+            var iconSpritePositionX = (index * ICON_GAP) + 1;
+            var iconSpritePositionY = 1;
+
+
+            var marker = new naver.maps.Marker({
+                map: map,
+                position: position,
+                icon: {
+                    url: ICON_SPRITE_IMAGE_URL,
+                    size: new naver.maps.Size(26, 36), // 이미지 크기
+                    origin: new naver.maps.Point(iconSpritePositionX, iconSpritePositionY), // 스프라이트 이미지에서 클리핑 위치
+                    anchor: new naver.maps.Point(13, 36), // 지도상 위치에서 이미지 위치의 offset
+                    scaledSize: new naver.maps.Size(395, 79)
+
+                },
+                animation: naver.maps.Animation.BOUNCE
+            });
+
+            return marker;
+        }
+        function getClickHandler(seq) {
+            return function (e) {
+                var marker = markers[seq],
+                    infoWindow2 = infoWindows[seq];
+
+                if (infoWindow2.getMap()) {
+                    infoWindow2.close();
+                } else {
+                    infoWindow2.open(map, marker);
+                }
+            }
+        }
+
+        for (var j = 0, ii = markers.length; j < ii; j++) {
+            naver.maps.Event.addListener(markers[j], 'click', getClickHandler(j));
+        }
+
+
+
+
+    </script>
+
+</div>
+{% endblock %}

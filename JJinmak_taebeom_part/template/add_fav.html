@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block contents %}
+<h1 class="text-center">즐겨찾기 추가</h1>
+<hr>
+    <div style="width: 30%; margin: auto;">
+
+            <div class="form-group">
+                <label for="장소">장소</label><br>
+                <form action="/list3" method="POST">
+                    {% if session['point'] %}
+
+                    <input type="text" class="form-control" value="{{ session['point'] }}" name="point"
+                        id="point" style="width: 220px; float: left;">
+                    <button type="submit" class="btn btn-primary">검색</button>
+                </form>
+                <br>
+                {% else %}
+                <form action="/list3" method="POST">
+                    <input type="text" class="form-control" placeholder="장소를 입력하세요" name="point" id="point"
+                           style="width: 400px; float: left;">
+                    <button type="submit" class="btn btn-info">검색</button>
+                    {% endif %}
+                    <br>
+                </form>
+            </div>
+            <div class="form-group">
+                <label for="favoriteTitle">Title</label>
+
+            <form action="/add_fav_pro", method='POST'>
+                <input type="hidden" name="point" value="{{ session['point'] }}">
+                <input type="text" class="form-control" placeholder="Enter Title" id="favoriteTitle" name="favoriteTitle">
+                <button type="submit" class="btn btn-primary" value="favoriteTitle">Submit</button>
+                <button type="reset" class="btn btn-primary">Reset</button>
+            </form>
+            </div>
+            <br><br>
+            <br><br>
+            <br><p class="text-center"><a href="/">Home</a></p>
+    </div>
+
+
+{% endblock %}

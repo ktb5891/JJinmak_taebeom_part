@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block contents %}
+    <h1 class="text-center">즐겨찾기</h1>
+    <hr>
+        <button class="btn btn-dark" style="float: right; margin-right: 200px;"><a href="/add_fav">추가</a></button>
+        <br><br>
+    <table class="table table-hover" style="width: 40%; margin: auto">
+
+        <tr class="table-warning">
+            <th>Title</th>
+            <th>Address</th>
+            <th>Delete</th>
+            <th colspan="2" style="text-align:center;">부가기능</th>
+        </tr>
+        {% for show_favorite_dict in show_favorite_list %}
+        <tr>
+            <td>{{show_favorite_dict.favoriteTitle}}</td>
+            <td>{{show_favorite_dict.favoriteAddress}}</td>
+            <td>
+                <form action="/del_fav" method="POST">
+                <input type="hidden" value="{{show_favorite_dict.favoriteNo}}" name="favoriteNo" id="favoriteNo">
+                <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+            </td>
+            <td>
+                <form action="/list_pro" method="POST">
+                <input type="hidden" value="{{show_favorite_dict.favoriteAddress}}" name="startpoint" id="startpoint">
+                <button type="submit" class="btn btn-success">출발지</button>
+                </form>
+            </td>
+            <td>
+                <form action="/list_pro2" method="POST">
+                <input type="hidden" value="{{show_favorite_dict.favoriteAddress}}" name="endpoint" id="endpoint">
+                <button type="submit" class="btn btn-success">도착지</button>
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}

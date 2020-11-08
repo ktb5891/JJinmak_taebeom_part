@@ -1,0 +1,286 @@
+{% extends 'layout.html' %}
+
+{% block contents %}
+<!-- <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=fau64bbv6v"></script>
+</head>
+<body> -->
+
+<div id="div_search">
+    <h2 style="text-align: center;">출발지/도착지 검색</h2>
+    <hr>
+    <div style="margin: 10px;">
+        <label for="출발지">출발지</label><br>
+        <form action="/list" method="POST">
+            {% if session['startpoint'] %}
+
+            <input type="text" class="form-control" value="{{ session['startpoint'] }}" name="startpoint"
+                id="startpoint" style="width: 220px; float: left;">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+        <br>
+        <form action="/start_pop">
+            <button class="btn btn-danger">
+                출발지 삭제
+            </button>
+        </form>
+            {% else %}
+        <form action="/list" method="POST">
+            <input type="text" class="form-control" placeholder="출발지를 입력하세요" name="startpoint" id="startpoint"
+                style="width: 220px; float: left;">
+            <button type="submit" class="btn btn-primary">검색</button>
+            {% endif %}
+            <br>
+        </form>
+        <br>
+        <label for="도착지">도착지</label><br>
+        <form action="/list2" method="POST">
+            {% if session['endpoint'] %}
+
+            <input type="text" class="form-control" value="{{ session['endpoint'] }}" name="endpoint" id="endpoint"
+                style="width: 220px; float: left;">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+        <br>
+        <form action="/end_pop">
+            <button class="btn btn-danger">
+                도착지 삭제
+            </button>
+        </form>
+        {% else %}
+        <form action="/list2" method="POST">
+            <input type="text" class="form-control" placeholder="도착지를 입력하세요" name="endpoint" id="endpoint"
+                style="width: 220px; float: left;">
+            <button type="submit" class="btn btn-primary">검색</button>
+            {% endif %}
+            <br>
+        </form>
+    </div>
+
+    <hr>
+    <div style="text-align: center;">
+        {% if session['userid'] %}
+        <button type="button" class="btn btn-info"><a href="/fav" style="color:white;">즐겨찾기</a></button>
+        {% endif %}
+        <button type="button" class="btn btn-dark"><a href="/route">막차탐색</a></button>
+    </div>
+
+</div>
+
+<div id="div_con">
+
+    <div id="map" style="width:100%;height:89%;">
+
+
+        <script>
+
+            var location1 = 37.5012516;
+            var location2 = 127.0395822;
+
+
+            var map = new naver.maps.Map("map", {
+                center: new naver.maps.LatLng(location1, location2),
+                zoom: 15,
+                mapTypeControl: true
+            });
+
+            var infoWindow = new naver.maps.InfoWindow({
+                anchorSkew: true
+            });
+
+            map.setCursor('pointer');
+
+            function searchCoordinateToAddress(latlng) {
+
+                infoWindow.close();
+
+                naver.maps.Service.reverseGeocode({
+                    coords: latlng,
+                    orders: [
+                        naver.maps.Service.OrderType.ADDR,
+                        naver.maps.Service.OrderType.ROAD_ADDR
+                    ].join(',')
+                }, function (status, response) {
+                    if (status === naver.maps.Service.Status.ERROR) {
+                        if (!latlng) {
+                            return alert('ReverseGeocode Error, Please check latlng');
+                        }
+                        if (latlng.toString) {
+                            return alert('ReverseGeocode Error, latlng:' + latlng.toString());
+                        }
+                        if (latlng.x && latlng.y) {
+                            return alert('ReverseGeocode Error, x:' + latlng.x + ', y:' + latlng.y);
+                        }
+                        return alert('ReverseGeocode Error, Please check latlng');
+                    }
+
+                    var address = response.v2.address,
+                        htmlAddresses = [];
+                    if (address.jibunAddress !== '') {
+                        htmlAddresses.push('[위도 / 경도] ' + latlng);
+                    }
+                    if (address.jibunAddress !== '') {
+                        htmlAddresses.push('[지번 주소] ' + address.jibunAddress);
+                    }
+
+                    if (address.roadAddress !== '') {
+                        htmlAddresses.push('[도로명 주소] ' + address.roadAddress);
+                    }
+                    var str = address.jibunAddress;
+                    new_address = str.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    if (str.substring(0, 3) == "경기도") {
+                        infoWindow.setContent([
+                            '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                            '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                            htmlAddresses.join('<br />'),
+                            '<br>',
+                            '<span style="display : inline-block; float : left">',
+
+                            '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                            '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(3) + ' >출발지</button>',
+
+                            '</form>',
+
+                            '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                            '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(3) + ' >도착지</button>',
+                            '</form>',
+                            '</span>',
+                            '</div>'
+                        ].join('\n'));
+                    }
+                    else {
+                        infoWindow.setContent([
+                            '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                            '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                            htmlAddresses.join('<br />'),
+                            '<br>',
+                            '<span style="display : inline-block; float : left">',
+
+                            '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                            '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(5) + ' >출발지</button>',
+
+                            '</form>',
+
+                            '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                            '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(5) + ' >도착지</button>',
+                            '</form>',
+                            '</span>',
+                            '</div>'
+                        ].join('\n'));
+                    }
+
+                    infoWindow.open(map, latlng);
+                });
+            }
+
+            function searchAddressToCoordinate(address) {
+                naver.maps.Service.geocode({
+                    query: address
+                }, function (status, response) {
+                    if (status === naver.maps.Service.Status.ERROR) {
+                        if (!address) {
+                            return alert('Geocode Error, Please check address');
+                        }
+                        return alert('Geocode Error, address:' + address);
+                    }
+
+                    if (response.v2.meta.totalCount === 0) {
+                        return alert('No result.');
+                    }
+
+                    var htmlAddresses = [],
+                        item = response.v2.addresses[0],
+                        point = new naver.maps.Point(item.x, item.y);
+
+                    if (item.roadAddress) {
+                        htmlAddresses.push('[위도, 경도] ' + item.x + "/" + item.y);
+                    }
+
+                    if (item.roadAddress) {
+                        htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
+                    }
+
+                    if (item.jibunAddress) {
+                        htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
+                    }
+
+                    if (item.englishAddress) {
+                        htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+                    }
+                    var str = item.jibunAddress;
+                    new_address = str.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    new_address = new_address.replace(" ", "")
+                    if (str.substring(0, 3) == "경기도") {
+                        infoWindow.setContent([
+                            '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                            '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                            htmlAddresses.join('<br />'),
+                            '<br>',
+                            '<span style="display : inline-block; float : left">',
+
+                            '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                            '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(3) + ' >출발지</button>',
+
+                            '</form>',
+
+                            '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                            '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(3) + ' >도착지</button>',
+                            '</form>',
+                            '</span>',
+                            '</div>'
+                        ].join('\n'));
+                    }
+                    else {
+                        infoWindow.setContent([
+                            '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                            '<h4 style="margin-top:5px;">검색 주소 : ' + str + '</h4><br />',
+                            htmlAddresses.join('<br />'),
+                            '<br>',
+                            '<span style="display : inline-block; float : left">',
+
+                            '<form action="/list_pro" class="form-inline text-center" style="justify-content: center; float : left;" method="POST">',
+                            '<button id=startpoint name=startpoint class = "btn btn-primary" type="submit" style="width:100%; background-color: primary; border-color: primary;" value=' + new_address.substring(5) + ' >출발지</button>',
+
+                            '</form>',
+
+                            '<form action="/list_pro2" class="form-inline text-center" style="justify-content: center; float : right;" method="POST">',
+                            '<button id=endpoint name=endpoint class = "btn btn-danger" type="submit" style="width:100%; background-color: danger; border-color: danger;" value=' + new_address.substring(5) + ' >도착지</button>',
+                            '</form>',
+                            '</span>',
+                            '</div>'
+                        ].join('\n'));
+                    }
+                    map.setCenter(point);
+                    infoWindow.open(map, point);
+                });
+            }
+
+            function initGeocoder() {
+                if (!map.isStyleMapReady) {
+                    return;
+                }
+
+                map.addListener('click', function (e) {
+                    searchCoordinateToAddress(e.coord);
+                });
+
+                searchAddressToCoordinate('테헤란로 212 멀티캠퍼스');
+            }
+
+            naver.maps.onJSContentLoaded = initGeocoder;
+            naver.maps.Event.once(map, 'init_stylemap', initGeocoder);
+
+
+        </script>
+    </div>
+</div>
+{% endblock %}

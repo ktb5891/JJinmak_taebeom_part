@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% block contents %}
+<h1 class="text-center">Login</h1>
+<hr><br>
+{% if session['userid'] %}
+    <h2 class="text-center">Welcome {{ session['userid'] }}님</h2>
+    <p class="text-center">
+        <a href="/log_out" class="btn btn-warning">Log Out</a>
+    </p>
+{% else %}
+<form action="/login_pro" class="form-inline text-center" style="justify-content: center; margin-bottom:500px;" method="POST">
+    <label for="userid" class="mb-2 mr-sm-2">UserID:</label>
+        <input type="text" class="form-control mb-2 mr-sm-2" id="userid" placeholder="Enter UserID" name="userid">
+    &nbsp; &nbsp; &nbsp;
+    <label for="pwd" class="mb-2 mr-sm-2"> Password:</label>
+        <input type="password" class="form-control mb-2 mr-sm-2" id="pwd" placeholder="Enter Password" name="pwd">
+    <br><br>
+    <div class="form-check mb-2 mr-sm-2">
+        <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" name="remember"> Remember me
+        </label><br>
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="reset" class="btn btn-danger">Cancel</button>
+</form>
+{% endif %}
+{% endblock %}

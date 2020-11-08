@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>JJin Mak Service</title>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=fau64bbv6v"></script>
+<script type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=fau64bbv6v&submodules=geocoder"></script>
+
+    <style>
+        
+        html, body{
+            width:100%; height:100%;
+        }
+        #div_root{
+            margin: auto;
+            width: 800px;
+        }
+        #div_con {
+            margin: auto;
+            width: 80%;
+            height: 100%;
+            float: right;
+            position: static;
+        }
+
+        #div_search{
+            width:20%;
+            height: 100%;
+            float: left;
+        }
+
+        .footer{
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: lightskyblue;
+            color: white;
+            text-align: center;
+        }
+
+        .imgCollage{
+            margin: auto;
+            width: 80%;
+            text-align: center;
+            position: static;
+            left: 20%;
+            right: 20px;
+            place-content: center;
+        }
+
+        @media screen and (min-width: 780px) {
+            .imgCollage{
+                display: flex;
+                -webkit-flex: auto;
+                -moz-display: flex;
+                -ms-display: flex;
+                flex-wrap: wrap;
+                -webkit-flex-wrap: wrap;
+                -moz-flex-wrap: wrap;
+                -ms-flex-wrap: wrap;
+            }
+
+            .imgCollage>span{
+                padding: 4px;
+            }
+
+            .imgCollage img{
+                box-shadow:none;
+            }
+        }
+
+    </style>
+</head >
+
+<body>
+    <div id=div_top>
+    <nav class="navbar navbar-inverse fixed" style="background-color: lightskyblue; margin-bottom: 0%;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">JJin Mak</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                {% if session['userid'] %}
+                <li><a href="/fav">Favorites</a></li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if session['userid'] %}
+                <li><a href="/log_out"><span class="glyphicon glyphicon-log-in"></span> LogOut</a></li>
+                {% else %}
+                <li><a href="/add_member"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+
+    <!-- <div class="container">
+        <h3>Right Aligned Navbar</h3>
+        <p>The .navbar-right class is used to right-align navigation bar buttons.</p>
+    </div> -->
+    {% block contents %}{% endblock %}
+    <footer class="footer text-center bg-info py-2" style="width: 100%; height: 10%;">
+        <h3 style="text-emphasis: white;;">JJin Mak</h3>
+        <p class="text-white">JJin Mak's Homepage is powered by <span>Makchang</span> / Design by <span>Gopchang</span>
+        </p>
+    </footer>
+    
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+
+</html>
